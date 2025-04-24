@@ -12,7 +12,7 @@ import { z } from "zod";
 import { SignupFormSchema } from "@/app/signup/signup-form-schema";
 
 export default function SignupPage() {
-    const [error, setError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(
@@ -31,33 +31,33 @@ export default function SignupPage() {
         confirmPassword,
     }: z.infer<typeof SignupFormSchema>) => {
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setErrorMessage("Passwords do not match");
             return;
         }
         try {
             const res = await createUserWithEmailAndPassword(email, password);
             if (!res) {
-                setError("Signin failed");
+                setErrorMessage("Signin failed");
                 return;
             }
             if (!auth.currentUser) {
                 return;
             }
-            const user = await updateProfile(auth.currentUser, {
+            await updateProfile(auth.currentUser, {
                 displayName: name,
             });
             setDialogOpen(true);
-        } catch (e) {
-            setError("Signin failed");
+        } catch (error: any) {
+            setErrorMessage(`Signin failed. ${error.message || ""}`);
         }
-        setError("");
+        setErrorMessage("");
     };
 
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">
                 <SignupForm
-                    error={error}
+                    error={errorMessage}
                     dialogOpen={dialogOpen}
                     setDialogOpen={setDialogOpen}
                     onSubmit={onSubmit}

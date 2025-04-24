@@ -9,7 +9,6 @@ import LoadingPage from "@/components/loading-page";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { CreateProductSchema } from "./create-product-schema";
-import { AxiosError } from "axios";
 
 export default function CreateProductPage() {
     const [user, userLoading] = useAuthState(auth);
@@ -22,7 +21,7 @@ export default function CreateProductPage() {
         if (!userLoading && !user) {
             router.push("/login");
         }
-    }, [userLoading, user]);
+    }, [userLoading, user, router]);
 
     if (userLoading || (!user && typeof window !== "undefined")) {
         return <LoadingPage />;
@@ -42,7 +41,7 @@ export default function CreateProductPage() {
             console.log(response.data);
             setError("");
             setDialogOpen(true);
-        } catch (error: AxiosError | any) {
+        } catch (error: any) {
             if (error.response.status === 400) {
                 setError(
                     `Error submitting data: "${error.response.data.message}"`
