@@ -16,7 +16,7 @@ export default function ProfilePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [productIdToDelete, setProductIdToDelete] = useState<string>("");
-    const [error, setError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
     const sortByPrice = () => {
@@ -41,8 +41,10 @@ export default function ProfilePage() {
                     }
                 );
                 setProducts(data);
-            } catch (er) {
-                setError("Failed to fetch products");
+            } catch (error: any) {
+                setErrorMessage(
+                    `Failed to fetch products. ${error.message || ""}`
+                );
             } finally {
                 setIsLoading(false);
             }
@@ -55,7 +57,7 @@ export default function ProfilePage() {
         if (!userLoading && !user) {
             router.push("/login");
         }
-    }, [userLoading, user]);
+    }, [userLoading, user, router]);
 
     if (userLoading || (!user && typeof window !== "undefined")) {
         return <LoadingPage />;
@@ -77,8 +79,8 @@ export default function ProfilePage() {
             );
             setProductIdToDelete("");
             setDialogOpen(false);
-        } catch (err) {
-            setError("Failed to delete item");
+        } catch (error: any) {
+            setErrorMessage(`Failed to delete item. ${error.message || ""}`);
         }
     };
 
@@ -91,7 +93,7 @@ export default function ProfilePage() {
             dialogOpen={dialogOpen}
             setDialogOpen={setDialogOpen}
             setProductIdToDelete={setProductIdToDelete}
-            error={error}
+            error={errorMessage}
         />
     );
 }
