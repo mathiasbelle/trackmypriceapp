@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -29,7 +28,6 @@ import axios from "@/api/axios";
 import {
     deleteUser,
     EmailAuthProvider,
-    getAuth,
     reauthenticateWithCredential,
     updateProfile,
 } from "firebase/auth";
@@ -43,14 +41,14 @@ import { AlertCircle } from "lucide-react";
 export default function SettingsPage() {
     const [user, userLoading] = useAuthState(auth);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [error, setError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
     useEffect(() => {
         if (!userLoading && !user) {
             router.push("/login");
         }
-    }, [userLoading, user]);
+    }, [userLoading, user, router]);
 
     const deleteAccountForm = useForm<z.infer<typeof DeleteAccountSchema>>({
         resolver: zodResolver(DeleteAccountSchema),
@@ -76,9 +74,9 @@ export default function SettingsPage() {
         if (!user) return;
 
         try {
-            const res = await updateProfile(user, { displayName: name });
-        } catch (e) {
-            console.error("Error updating name");
+            await updateProfile(user, { displayName: name });
+        } catch (error: any) {
+            setErrorMessage(`Error updating name. ${error.message || ""}`);
         }
     };
 
@@ -101,117 +99,10 @@ export default function SettingsPage() {
             );
             await deleteUser(user);
             router.push("/");
-        } catch (e) {
-            console.error("Error deleting account:", e);
+        } catch (error: any) {
+            setErrorMessage(`Error deleting account. ${error.message || ""}`);
         }
     };
-
-    // return (
-    //     <section className="py-10 max-w-lg mx-auto">
-    //         <Card>
-    //             <CardHeader>
-    //                 <CardTitle>Settings</CardTitle>
-    //             </CardHeader>
-    //             <CardContent>
-    //                 <Form {...updateNameForm}>
-    //                     <form
-    //                         onSubmit={updateNameForm.handleSubmit(
-    //                             onSubmitUpdateName
-    //                         )}
-    //                         className="space-y-8"
-    //                     >
-    //                         <FormField
-    //                             control={updateNameForm.control}
-    //                             name="name"
-    //                             render={({ field }) => (
-    //                                 <FormItem>
-    //                                     <FormLabel>Name</FormLabel>
-    //                                     <FormControl>
-    //                                         <Input
-    //                                             placeholder="Your Name"
-    //                                             {...field}
-    //                                         />
-    //                                     </FormControl>
-    //                                     <FormMessage />
-    //                                 </FormItem>
-    //                             )}
-    //                         />
-    //                         <Button type="submit" className="w-full">
-    //                             Update Name
-    //                         </Button>
-    //                         {error && (
-    //                             <p className="text-red-500 text-sm">{error}</p>
-    //                         )}
-    //                     </form>
-    //                 </Form>
-    //                 <div className="mt-6">
-    //                     <Button
-    //                         variant="destructive"
-    //                         className="w-full"
-    //                         onClick={() => setDialogOpen(true)}
-    //                     >
-    //                         Delete Account
-    //                     </Button>
-
-    //                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-    //                         <DialogContent className="sm:max-w-[425px]">
-    //                             <DialogHeader>
-    //                                 <DialogTitle>
-    //                                     Confirm account deletion
-    //                                 </DialogTitle>
-    //                                 <DialogDescription>
-    //                                     You need to re-authenticate to delete
-    //                                     your account
-    //                                 </DialogDescription>
-    //                             </DialogHeader>
-    //                             <Form {...deleteAccountForm}>
-    //                                 <form
-    //                                     onSubmit={deleteAccountForm.handleSubmit(
-    //                                         onSubmitDeleteAccount
-    //                                     )}
-    //                                     className="space-y-8"
-    //                                 >
-    //                                     <FormField
-    //                                         control={deleteAccountForm.control}
-    //                                         name="password"
-    //                                         render={({ field }) => (
-    //                                             <FormItem>
-    //                                                 <FormLabel>
-    //                                                     Confirm Password
-    //                                                 </FormLabel>
-    //                                                 <FormControl>
-    //                                                     <Input
-    //                                                         type="password"
-    //                                                         placeholder=""
-    //                                                         {...field}
-    //                                                     />
-    //                                                 </FormControl>
-    //                                                 <FormMessage />
-    //                                             </FormItem>
-    //                                         )}
-    //                                     />
-    //                                     <DialogFooter>
-    //                                         <Button
-    //                                             variant="destructive"
-    //                                             className="w-full"
-    //                                         >
-    //                                             Confirm
-    //                                         </Button>
-    //                                         {error && (
-    //                                             <p className="text-red-500 text-sm">
-    //                                                 {error}
-    //                                             </p>
-    //                                         )}
-    //                                     </DialogFooter>
-    //                                 </form>
-    //                             </Form>
-    //                         </DialogContent>
-    //                     </Dialog>
-    //                 </div>
-    //             </CardContent>
-    //         </Card>
-    //     </section>
-    // );
     return (
         <section>
             <Tabs defaultValue="account" className="w-[400px]">
@@ -248,8 +139,10 @@ export default function SettingsPage() {
                             <Button type="submit" className="w-full">
                                 Update Name
                             </Button>
-                            {error && (
-                                <p className="text-red-500 text-sm">{error}</p>
+                            {errorMessage && (
+                                <p className="text-red-500 text-sm">
+                                    {errorMessage}
+                                </p>
                             )}
                         </form>
                     </Form>
@@ -317,9 +210,9 @@ export default function SettingsPage() {
                                             >
                                                 Confirm
                                             </Button>
-                                            {error && (
+                                            {errorMessage && (
                                                 <p className="text-red-500 text-sm">
-                                                    {error}
+                                                    {errorMessage}
                                                 </p>
                                             )}
                                         </DialogFooter>
