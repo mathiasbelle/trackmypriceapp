@@ -156,7 +156,7 @@ export default function SignupForm({
                         <AlertDialogTitle>Signup Successful</AlertDialogTitle>
                         <AlertDialogDescription>
                             Your account has been successfully created. Click
-                            "OK" to proceed to your profile.
+                            &quot;OK&quot; to proceed to your profile.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
