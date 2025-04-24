@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import AuthButtons from "./auth-buttons";
+import Image from "next/image";
 
 interface MenuItem {
     title: string;
@@ -64,10 +65,12 @@ const Navbar = ({
                             href={logo.url}
                             className="flex items-center gap-2"
                         >
-                            <img
+                            <Image
                                 src={logo.src}
-                                className="max-h-8"
                                 alt={logo.alt}
+                                width={32}
+                                height={32}
+                                className="max-h-8"
                             />
                             <span className="text-lg font-semibold tracking-tighter">
                                 {logo.title}
@@ -92,10 +95,12 @@ const Navbar = ({
                             href={logo.url}
                             className="flex items-center gap-2"
                         >
-                            <img
+                            <Image
                                 src={logo.src}
-                                className="max-h-8"
                                 alt={logo.alt}
+                                width={32}
+                                height={32}
+                                className="max-h-8"
                             />
                         </Link>
                         <Sheet>
@@ -111,8 +116,11 @@ const Navbar = ({
                                             href={logo.url}
                                             className="flex items-center gap-2"
                                         >
-                                            <img
+                                            <Image
                                                 src={logo.src}
+                                                alt={logo.alt}
+                                                width={32}
+                                                height={32}
                                                 className="max-h-8"
                                             />
                                         </Link>

@@ -34,10 +34,12 @@ const Footer = ({
                         <div className="col-span-2 mb-8 lg:mb-0">
                             <div className="flex items-center gap-2 lg:justify-start">
                                 <Link href="/">
-                                    <img
+                                    <Image
                                         src={logo.src}
                                         alt={logo.alt}
                                         title={logo.title}
+                                        width={40}
+                                        height={40}
                                         className="h-10"
                                     />
                                 </Link>
