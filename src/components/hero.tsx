@@ -23,7 +23,7 @@ const Hero = ({
         url: "/signup",
     },
     image = {
-        src: "/images/product-table.PNG",
+        src: "/images/product-table.png",
         alt: "Example of a tracked products table with price history",
     },
 }: HeroProps) => {
