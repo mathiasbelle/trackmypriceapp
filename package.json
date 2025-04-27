@@ -1,9 +1,12 @@
 {
   "name": "trackmypriceapp",
   "version": "0.1.0",
+  "description": "A frontend app to monitor price changes across mutiple websites",
+  "author": "Mathias Giongo Bellé",
   "private": true,
+  "license": "MIT",
   "scripts": {
-    "dev": "next dev --port 4000",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
