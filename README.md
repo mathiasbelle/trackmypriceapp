@@ -1,6 +1,6 @@
 # TrackMyPriceApp
 
-TrackMyPriceApp is a full-stack application that helps users track the price of their favorite products and get notified when prices drop. It currently supports Amazon, Mercado Livre, Magazine Luiza and OLX.
+This is the frontend of the TrackMyPriceApp application, a portfolio project that automatically tracks price changes of products from e-commerce websites and sends email notifications to users when a price change occurs.
 
 ## Features
 
