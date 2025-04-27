@@ -37,6 +37,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
+import { isAxiosError } from "axios";
 
 export default function SettingsPage() {
     const [user, userLoading] = useAuthState(auth);
@@ -100,7 +101,17 @@ export default function SettingsPage() {
             await deleteUser(user);
             router.push("/");
         } catch (error: any) {
-            setErrorMessage(`Error deleting account. ${error.message || ""}`);
+            if (isAxiosError(error)) {
+                const message =
+                    error.response?.data?.message ||
+                    error.message ||
+                    "An error occurred while deleting the account.";
+                setErrorMessage(`Error deleting account. ${message}`);
+            } else {
+                setErrorMessage(
+                    "An unexpected error occurred while deleting the account."
+                );
+            }
         }
     };
     return (

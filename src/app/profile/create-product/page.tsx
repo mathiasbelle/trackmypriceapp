@@ -9,6 +9,7 @@ import LoadingPage from "@/components/loading-page";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { CreateProductSchema } from "./create-product-schema";
+import { isAxiosError } from "axios";
 
 export default function CreateProductPage() {
     const [user, userLoading] = useAuthState(auth);
@@ -32,20 +33,25 @@ export default function CreateProductPage() {
 
         try {
             const token = await user.getIdToken();
-            const response = await axios.post(
+            await axios.post(
                 "/products",
                 { url },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            console.log(response.data);
             setError("");
             setDialogOpen(true);
         } catch (error: any) {
-            if (error.response.status === 400) {
-                setError(
-                    `Error submitting data: "${error.response.data.message}"`
-                );
+            if (isAxiosError(error)) {
+                if (error.response?.status === 400) {
+                    setError(
+                        `Error submitting data: "${error.response.data.message}"`
+                    );
+                } else {
+                    setError("An unexpected server error occurred.");
+                }
+            } else {
+                setError("An unexpected error occurred.");
             }
         }
     };

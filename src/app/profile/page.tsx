@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ProductTable from "@/components/product-table";
 import LoadingPage from "@/components/loading-page";
 import ProductInterface from "./product-interace";
+import { isAxiosError } from "axios";
 
 export default function ProfilePage() {
     const [user, userLoading] = useAuthState(auth);
@@ -42,9 +43,17 @@ export default function ProfilePage() {
                 );
                 setProducts(data);
             } catch (error: any) {
-                setErrorMessage(
-                    `Failed to fetch products. ${error.message || ""}`
-                );
+                if (isAxiosError(error)) {
+                    const message =
+                        error.response?.data?.message ||
+                        error.message ||
+                        "An error occurred while fetching products.";
+                    setErrorMessage(`Failed to fetch products. ${message}`);
+                } else {
+                    setErrorMessage(
+                        "An unexpected error occurred while fetching products."
+                    );
+                }
             } finally {
                 setIsLoading(false);
             }
