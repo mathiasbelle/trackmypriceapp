@@ -51,10 +51,6 @@ const Navbar = ({
         { title: "Features", url: "/#features" },
         { title: "Supported Stores", url: "/#integration" },
     ],
-    auth = {
-        login: { title: "Login", url: "/login" },
-        signup: { title: "Sign up", url: "/signup" },
-    },
 }: NavbarProps) => {
     return (
         <section className="py-4">
@@ -138,16 +134,7 @@ const Navbar = ({
                                     </Accordion>
 
                                     <div className="flex flex-col gap-3">
-                                        <Button asChild variant="outline">
-                                            <Link href={auth.login.url}>
-                                                {auth.login.title}
-                                            </Link>
-                                        </Button>
-                                        <Button asChild>
-                                            <Link href={auth.signup.url}>
-                                                {auth.signup.title}
-                                            </Link>
-                                        </Button>
+                                        <AuthButtons />
                                     </div>
                                 </div>
                             </SheetContent>
