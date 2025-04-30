@@ -1,8 +1,11 @@
 "use client";
 
 import SignupForm from "@/components/signup-form";
-import { useState } from "react";
-import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useEffect, useState } from "react";
+import {
+    useAuthState,
+    useCreateUserWithEmailAndPassword,
+} from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/config";
 import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -10,10 +13,12 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { SignupFormSchema } from "@/app/signup/signup-form-schema";
+import LoadingPage from "../../components/loading-page";
 
 export default function SignupPage() {
     const [errorMessage, setErrorMessage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [user, userLoading] = useAuthState(auth);
 
     const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(
         auth,
@@ -23,6 +28,12 @@ export default function SignupPage() {
     );
 
     const router = useRouter();
+
+    useEffect(() => {
+        if (!userLoading && user && !dialogOpen) {
+            router.push("/profile");
+        }
+    }, [userLoading, user, router, dialogOpen]);
 
     const onSubmit = async ({
         name,
@@ -52,6 +63,10 @@ export default function SignupPage() {
         }
         setErrorMessage("");
     };
+
+    if (userLoading || (user && !dialogOpen && typeof window !== "undefined")) {
+        return <LoadingPage />;
+    }
 
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
