@@ -2,6 +2,8 @@
 
 This is the frontend of the TrackMyPriceApp application, a portfolio project that automatically tracks price changes of products from e-commerce websites and sends email notifications to users when a price change occurs.
 
+**Live Demo:** https://trackmypriceapp.com
+
 ## Features
 
 -   User Authentication using Firebase Auth
