@@ -1,7 +1,7 @@
 "use client";
 
 import SignupForm from "@/components/signup-form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     useAuthState,
     useCreateUserWithEmailAndPassword,
@@ -15,10 +15,14 @@ import { z } from "zod";
 import { SignupFormSchema } from "@/app/signup/signup-form-schema";
 import LoadingPage from "../../components/loading-page";
 
+import ReCAPTCHA from "react-google-recaptcha";
+import { handleCaptchaSubmission } from "../captcha/captcha";
+
 export default function SignupPage() {
     const [errorMessage, setErrorMessage] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [user, userLoading] = useAuthState(auth);
+    const [isVerified, setIsVerified] = useState(false);
 
     const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(
         auth,
@@ -28,6 +32,7 @@ export default function SignupPage() {
     );
 
     const router = useRouter();
+    const recaptchaRef = useRef<ReCAPTCHA>(null);
 
     useEffect(() => {
         if (!userLoading && user && !dialogOpen) {
@@ -35,12 +40,25 @@ export default function SignupPage() {
         }
     }, [userLoading, user, router, dialogOpen]);
 
+    const handleChange = (token: string | null) => {
+        handleCaptchaSubmission(token, setIsVerified);
+    };
+
+    function handleExpired() {
+        setIsVerified(false);
+    }
+
     const onSubmit = async ({
         name,
         email,
         password,
         confirmPassword,
     }: z.infer<typeof SignupFormSchema>) => {
+        if (!isVerified) {
+            recaptchaRef.current?.reset();
+            setErrorMessage("Please verify you are not a robot");
+            return;
+        }
         if (password !== confirmPassword) {
             setErrorMessage("Passwords do not match");
             return;
@@ -77,6 +95,9 @@ export default function SignupPage() {
                     setDialogOpen={setDialogOpen}
                     onSubmit={onSubmit}
                     router={router}
+                    recaptchaRef={recaptchaRef}
+                    handleChange={handleChange}
+                    handleExpired={handleExpired}
                 />
             </div>
         </div>

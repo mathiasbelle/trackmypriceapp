@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SignupFormSchema } from "@/app/signup/signup-form-schema";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface SignupFormProps {
     className?: string;
@@ -41,6 +42,9 @@ interface SignupFormProps {
     dialogOpen?: boolean;
     setDialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     router: AppRouterInstance;
+    recaptchaRef: React.RefObject<ReCAPTCHA | null>;
+    handleChange: (token: string | null) => void;
+    handleExpired: () => void;
 }
 
 export default function SignupForm({
@@ -50,6 +54,9 @@ export default function SignupForm({
     setDialogOpen,
     onSubmit,
     router,
+    recaptchaRef,
+    handleChange,
+    handleExpired,
 }: SignupFormProps) {
     const form = useForm<z.infer<typeof SignupFormSchema>>({
         resolver: zodResolver(SignupFormSchema),
@@ -138,6 +145,15 @@ export default function SignupForm({
                                         <FormMessage />
                                     </FormItem>
                                 )}
+                            />
+                            <ReCAPTCHA
+                                sitekey={
+                                    process.env
+                                        .NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+                                }
+                                ref={recaptchaRef}
+                                onChange={handleChange}
+                                onExpired={handleExpired}
                             />
                             <Button type="submit" className="w-full">
                                 Sign Up
