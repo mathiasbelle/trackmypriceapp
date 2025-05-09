@@ -15,6 +15,7 @@ export default function CreateProductPage() {
     const [user, userLoading] = useAuthState(auth);
     const [error, setError] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [disableButton, setDisableButton] = useState(false);
 
     const router = useRouter();
 
@@ -32,6 +33,7 @@ export default function CreateProductPage() {
         if (!user) return;
 
         try {
+            setDisableButton(true);
             const token = await user.getIdToken();
             await axios.post(
                 "/products",
@@ -40,6 +42,7 @@ export default function CreateProductPage() {
             );
 
             setError("");
+            setDisableButton(false);
             setDialogOpen(true);
         } catch (error: any) {
             if (isAxiosError(error)) {
@@ -53,6 +56,7 @@ export default function CreateProductPage() {
             } else {
                 setError("An unexpected error occurred.");
             }
+            setDisableButton(false);
         }
     };
 
@@ -64,6 +68,7 @@ export default function CreateProductPage() {
                     dialogOpen={dialogOpen}
                     setDialogOpen={setDialogOpen}
                     error={error}
+                    disableButton={disableButton}
                 />
             </div>
         </div>

@@ -38,6 +38,7 @@ interface CreateProductFormProps {
     dialogOpen: boolean;
     setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
     error: string;
+    disableButton?: boolean;
 }
 
 export function CreateProductForm({
@@ -46,6 +47,7 @@ export function CreateProductForm({
     dialogOpen,
     setDialogOpen,
     error,
+    disableButton,
     ...props
 }: CreateProductFormProps) {
     const form = useForm<z.infer<typeof CreateProductSchema>>({
@@ -86,7 +88,11 @@ export function CreateProductForm({
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">
+                            <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={disableButton}
+                            >
                                 Add Product
                             </Button>
                             {error && (
